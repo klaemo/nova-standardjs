@@ -1,0 +1,31 @@
+{
+  "name": "javascript-standard-style-novaextension",
+  "private": true,
+  "version": "1.0.0",
+  "description": "JavaScript Standard Style Nova.app Extension",
+  "main": "Scripts/main.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/nova-editor-node": "2.0.0",
+    "standard": "16.0.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "standard": {
+    "globals": [ "nova", "Process", "IssueParser", "Range" ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/klaemo/javascript-standard-style-novaextension.git"
+  },
+  "author": "Clemens Stolle <klaemo@fastmail.fm>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/klaemo/javascript-standard-style-novaextension/issues"
+  },
+  "homepage": "https://github.com/klaemo/javascript-standard-style-novaextension#readme"
+}
