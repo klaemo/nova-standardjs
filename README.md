@@ -18,7 +18,9 @@ Let's get started!
 🎈 It can also be helpful to include a screenshot or GIF showing your extension in action:
 -->
 
-![](https://nova.app/images/en/dark/editor.png)
+![Screenshot of Nova.app running the JavaScript Standard Style extension](Images/screenshot.png)
+
+It also includes a `Fix all auto-fixable issues` command that can be invoked through the command palette.
 
 ## Requirements
 
@@ -28,7 +30,8 @@ Let's get started!
 
 JavaScript Standard Style requires some additional tools to be installed on your Mac:
 
-- [Node.js 8.2.0](https://nodejs.org) and NPM 5.2.0 or newer
+- a recent [Node.js](https://nodejs.org) version that's supported by [standardJS](https://standardjs.com)
+- `standard` has to be installed **locally** in your workspace. This extension will not use any globally installed `standard` installations. If this is something you want, feel free to open an issue or PR.
 
 <!--
 ✨ Providing tips, tricks, or other guides for installing or configuring external dependencies can go a long way toward helping your users have a good setup experience:
@@ -46,8 +49,19 @@ To configure global preferences, open **Extensions → Extension Library...** th
 
 You can also configure preferences on a per-project basis in **Project → Project Settings...**
 
+**Available options:**
+
+- Enable auto-fix on save
+
 <!--
 👋 That's it! Happy developing!
 
 P.S. If you'd like, you can remove these comments before submitting your extension 😉
 -->
+
+### Credits
+
+Lots of inspiration was drawn from these sources:
+
+- [Nova Prettier Extension](https://github.com/alexanderweiss/nova-prettier) by [Alexander Weiss](https://github.com/alexanderweiss)
+- [Nova ESLint Extension](https://github.com/apexskier/nova-eslint) by [Cameron Little](https://github.com/apexskier)
