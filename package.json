@@ -16,7 +16,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "standard": {
-    "globals": [ "nova", "Process", "IssueParser", "Range" ]
+    "globals": [
+      "nova",
+      "Process",
+      "IssueParser",
+      "Range",
+      "IssueSeverity",
+      "Issue",
+      "CompositeDisposable"
+    ]
   },
   "repository": {
     "type": "git",

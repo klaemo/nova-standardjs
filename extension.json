@@ -2,7 +2,7 @@
   "identifier": "klaemo.standardjs",
   "name": "JavaScript Standard Style",
   "organization": "Clemens Stolle",
-  "description": "Lorem ipsum, dolor sit amet.",
+  "description": "Lint your code with the JavaScript Standard Style linter.",
   "version": "1.0",
   "categories": ["issues", "formatters"],
 
@@ -19,25 +19,11 @@
     "filesystem": "readonly",
     "process": true
   },
-  
-  "issueMatchers": {
-      "standardjs-issue-matcher": {
-          "pattern": {
-              "regexp": "^(.+):(\\d+):(\\d+): (.+) \\((.+)\\)$",
-              "message": 4,
-              "code": 5,
-              "file": 1,
-              "line": 2,
-              "column": 3,
-              "severity": "warning"
-          }
-      }
-  },
 
   "config": [
     {
       "key": "klaemo.standardjs.config.autoFixOnSave",
-      "title": "Turns auto fix on save on or off.",
+      "title": "Turns auto fix on save on or off",
       "type": "boolean",
       "default": false
     }
@@ -46,19 +32,19 @@
   "configWorkspace": [
     {
       "key": "klaemo.standardjs.config.autoFixOnSave",
-      "title": "Turns auto fix on save on or off.",
+      "title": "Turns auto fix on save on or off",
       "type": "enum",
-      "values": ["Inherit from Global Settings", "Disable", "Enable"],
-      "default": "Inherit from Global Settings"
+      "values": ["Inherit from global settings", "Disable", "Enable"],
+      "default": "Inherit from global settings"
     }
   ],
 
   "commands": {
     "editor": [
       {
-        "title": "Fix all auto-fixable Issues.",
+        "title": "Fix all auto-fixable issues",
         "command": "klaemo.standardjs.command.executeAutofix",
-        "when": "documentHasPath && editorHasFocus",
+        "when": "editorHasFocus",
         "filters": {
           "syntaxes": ["javascript", "typescript", "jsx", "tsx"]
         }
