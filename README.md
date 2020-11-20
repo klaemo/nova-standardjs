@@ -18,7 +18,7 @@ Let's get started!
 🎈 It can also be helpful to include a screenshot or GIF showing your extension in action:
 -->
 
-![Screenshot of Nova.app running the JavaScript Standard Style extension](Images/screenshot.png)
+![Screenshot of Nova.app running the JavaScript Standard Style extension](https://raw.githubusercontent.com/klaemo/nova-standardjs/main/Images/screenshot.png)
 
 It also includes a `Fix all auto-fixable issues` command that can be invoked through the command palette.
 
