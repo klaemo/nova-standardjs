@@ -51,7 +51,7 @@ You can also configure preferences on a per-project basis in **Project → Proje
 
 **Available options:**
 
-- Enable auto-fix on save
+- Enable auto-fix on save (off by default)
 
 <!--
 👋 That's it! Happy developing!
