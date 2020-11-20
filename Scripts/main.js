@@ -273,6 +273,7 @@ class IssuesProvider {
         'in',
         filename
       )
+
       const issues = messages.map((message) => {
         const issue = new Issue()
         issue.message = message.message

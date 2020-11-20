@@ -10,30 +10,24 @@
   "dependencies": {},
   "devDependencies": {
     "@types/nova-editor-node": "2.0.0",
+    "eslint-plugin-nova": "1.3.0",
     "standard": "16.0.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "standard": {
-    "globals": [
-      "nova",
-      "Process",
-      "IssueParser",
-      "Range",
-      "IssueSeverity",
-      "Issue",
-      "CompositeDisposable"
-    ]
+    "plugins": ["nova"],
+    "envs": ["commonjs", "nova/nova"]
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/klaemo/javascript-standard-style-novaextension.git"
+    "url": "git+https://github.com/klaemo/nova-standardjs.git"
   },
   "author": "Clemens Stolle <klaemo@fastmail.fm>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/klaemo/javascript-standard-style-novaextension/issues"
+    "url": "https://github.com/klaemo/nova-standardjs/issues"
   },
-  "homepage": "https://github.com/klaemo/javascript-standard-style-novaextension#readme"
+  "homepage": "https://github.com/klaemo/nova-standardjs#readme"
 }
