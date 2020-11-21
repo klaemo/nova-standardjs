@@ -13,13 +13,15 @@
 
   "activationEvents": [
     "onLanguage:javascript",
-    "onLanguage:typescript",
     "onLanguage:jsx",
-    "onLanguage:tsx"
+    "onLanguage:markdown",
+    "onLanguage:html",
+    "onLanguage:vue"
   ],
 
   "entitlements": {
-    "process": true
+    "process": true,
+    "filesystem": "readonly"
   },
 
   "config": [

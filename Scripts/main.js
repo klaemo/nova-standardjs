@@ -1,9 +1,16 @@
-const ALLOWED_SYNTAXES = ['javascript', 'typescript', 'jsx', 'tsx']
+const { getConfigWithWorkspaceOverride, adjustRange } = require('./helpers')
+
+const DEFAULT_SYNTAXES = ['javascript', 'jsx']
+const EXTRA_SYNTAXES = ['markdown', 'html', 'vue']
+const ALLOWED_SYNTAXES = [...DEFAULT_SYNTAXES, ...EXTRA_SYNTAXES]
 const AUTO_FIX_CONFIG_KEY = 'klaemo.standardjs.config.autoFixOnSave'
 
 // Do work when the extension is activated
 exports.activate = async function () {
-  if (!nova.workspace.contains('node_modules/standard')) {
+  const standardPath = nova.path.join(nova.workspace.path, 'node_modules', 'standard')
+  const isStandardInstalled = nova.fs.access(standardPath, nova.fs.constants.R_OK)
+
+  if (!isStandardInstalled) {
     return
   }
 
@@ -12,7 +19,7 @@ exports.activate = async function () {
 
     await extension.start()
 
-    const issueProvider = new IssuesProvider(extension.service)
+    const issueProvider = new IssuesProvider(extension)
 
     nova.assistants.registerIssueAssistant(ALLOWED_SYNTAXES, issueProvider)
     console.info(`${nova.extension.name} activated for ${nova.workspace.path}`)
@@ -23,51 +30,6 @@ exports.activate = async function () {
 
 exports.deactivate = function () {
   // Clean up state before the extension is deactivated
-}
-
-function getWorkspaceConfig (name) {
-  const value = nova.workspace.config.get(name)
-  switch (value) {
-    case 'Enable':
-      return true
-    case 'Disable':
-      return false
-    case 'Inherit from global settings':
-      return null
-    default:
-      return value
-  }
-}
-
-function getConfigWithWorkspaceOverride (name) {
-  const workspaceConfig = getWorkspaceConfig(name)
-  const extensionConfig = nova.config.get(name)
-
-  return workspaceConfig === null ? extensionConfig : workspaceConfig
-}
-
-/**
- * Returns a new range to account for changed text
- * or null if it can't be adjusted because it overlaps with the replacement.
- *
- * @param {Range} toAdjust
- * @param {Range} replacedRange
- * @param {string} newText
- *
- * @returns {Range | null}
- */
-function adjustRange (toAdjust, replacedRange, newText) {
-  if (toAdjust.end <= replacedRange.start) {
-    return toAdjust
-  }
-  if (toAdjust.start >= replacedRange.end) {
-    const characterDiff = newText.length - replacedRange.length
-    return new Range(
-      toAdjust.start + characterDiff,
-      toAdjust.end + characterDiff
-    )
-  }
-  return null
 }
 
 /**
@@ -90,6 +52,10 @@ function adjustRange (toAdjust, replacedRange, newText) {
 
 class StandardExtension {
   constructor () {
+    /**
+    * @type {Map<string, boolean>}
+    */
+    this._installedPluginsCache = new Map()
     this.service = new Process('/usr/bin/env', {
       args: [
         'node',
@@ -116,13 +82,7 @@ class StandardExtension {
     this.service.start()
     await isReady
 
-    nova.workspace.onDidAddTextEditor((editor) => {
-      if (getConfigWithWorkspaceOverride(AUTO_FIX_CONFIG_KEY)) {
-        this.onWillSaveListeners.add(
-          editor.onWillSave(this.editorWillSave, this)
-        )
-      }
-    })
+    nova.workspace.onDidAddTextEditor(this.onDidAddTextEditor, this)
 
     nova.config.onDidChange(AUTO_FIX_CONFIG_KEY, this.handleConfigChange, this)
     nova.workspace.config.onDidChange(
@@ -133,7 +93,7 @@ class StandardExtension {
 
     nova.commands.register(
       'klaemo.standardjs.command.executeAutofix',
-      this.format,
+      this.fixIssues,
       this
     )
   }
@@ -157,25 +117,96 @@ class StandardExtension {
   /**
    * @param {TextEditor} editor
    */
-  async editorWillSave (editor) {
-    if (!ALLOWED_SYNTAXES.includes(editor.document.syntax)) {
+  onDidAddTextEditor (editor) {
+    if (getConfigWithWorkspaceOverride(AUTO_FIX_CONFIG_KEY)) {
+      this.onWillSaveListeners.add(
+        editor.onWillSave(this.editorWillSave, this)
+      )
+    }
+
+    const { syntax } = editor.document
+
+    const syntaxSupport = this.supportsSyntax(syntax)
+
+    if (syntaxSupport.isSupported && !syntaxSupport.isPluginInstalled) {
+      this.showNotificationForMissingPlugin(syntax, syntaxSupport.plugin)
+    }
+  }
+
+  supportsSyntax (syntax) {
+    if (DEFAULT_SYNTAXES.includes(syntax)) {
+      return { isSupported: true, isPluginInstalled: true, plugin: undefined }
+    }
+
+    if (!EXTRA_SYNTAXES.includes(syntax)) {
+      return { isSupported: false, isPluginInstalled: true, plugin: undefined }
+    }
+
+    const pluginName = `eslint-plugin-${syntax}`
+
+    // try not to do the file system lookup all the time
+    if (this._installedPluginsCache.get(pluginName)) {
+      return { isSupported: true, isPluginInstalled: true, plugin: pluginName }
+    }
+
+    const pluginPath = nova.path.join(nova.workspace.path, 'node_modules', pluginName)
+    // nova.workspace.contains() always returns `true` here?!
+    const hasPlugin = nova.fs.access(pluginPath, nova.fs.constants.R_OK)
+
+    this._installedPluginsCache.set(pluginName, hasPlugin)
+
+    return { isSupported: true, isPluginInstalled: hasPlugin, plugin: pluginName }
+  }
+
+  /**
+  * @param {string} syntax
+  * @param {string} pluginName
+  */
+  async showNotificationForMissingPlugin (syntax, pluginName) {
+    const configKey = 'klaemo.standardjs.notifications'
+    const dissmissedNotifications = nova.config.get(configKey, 'array') || []
+    const id = `missing-${pluginName}`
+
+    if (dissmissedNotifications.includes(id)) {
       return
     }
 
-    await this.format(editor)
+    const notification = new NotificationRequest(id)
+    notification.title = nova.localize('Missing plugin')
+    notification.body = `To check code inside ${syntax} files, install the "${pluginName}" ESLint plugin and add it to "standard.plugins" in your "package.json".`
+    notification.actions = [nova.localize('Got it'), nova.localize("Don't show this again")]
+
+    try {
+      const response = await nova.notifications.add(notification)
+      if (response.actionIdx === 1) {
+        nova.config.set(configKey, Array.from(new Set([...dissmissedNotifications, id])))
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   /**
    * @param {TextEditor} editor
    */
-  async format (editor) {
+  editorWillSave (editor) {
+    return this.fixIssues(editor)
+  }
+
+  /**
+   * @param {TextEditor} editor
+   */
+  async fixIssues (editor) {
+    const syntaxSupport = this.supportsSyntax(editor.document.syntax)
+    if (!syntaxSupport.isSupported || !syntaxSupport.isPluginInstalled) {
+      return
+    }
+
     const filename = editor.document.isUntitled
       ? 'untitled'
       : nova.path.basename(editor.document.path)
     const documentRange = new Range(0, editor.document.length)
     const text = editor.document.getTextInRange(documentRange)
-
-    console.info('format:', text.length, 'chars in', filename)
 
     const response = await this.service.request('lint', {
       text,
@@ -184,7 +215,7 @@ class StandardExtension {
     })
 
     if (response.fixableErrorCount === 0) {
-      console.info('format: no fixable errors in', filename)
+      console.info('fix: no fixable errors in', filename)
       return
     }
 
@@ -192,7 +223,7 @@ class StandardExtension {
     const messages = response.results?.[0]?.messages
 
     if (!messages) {
-      console.info('format: messages is null', filename)
+      console.info('fix: messages is null', filename)
       return
     }
 
@@ -232,10 +263,10 @@ class StandardExtension {
 
 class IssuesProvider {
   /**
-   * @param {Process} server
+   * @param {StandardExtension} extension
    */
-  constructor (server) {
-    this.service = server
+  constructor (extension) {
+    this.extension = extension
   }
 
   /**
@@ -243,6 +274,11 @@ class IssuesProvider {
    * @returns {Promise<string[]>}
    */
   async provideIssues (editor) {
+    const syntaxSupport = this.extension.supportsSyntax(editor.document.syntax)
+    if (!syntaxSupport.isSupported || !syntaxSupport.isPluginInstalled) {
+      return
+    }
+
     const filename = editor.document.isUntitled
       ? 'untitled'
       : nova.path.basename(editor.document.path)
@@ -254,7 +290,7 @@ class IssuesProvider {
 
       console.time('linting finished in')
 
-      const response = await this.service.request('lint', {
+      const response = await this.extension.service.request('lint', {
         text,
         filename: editor.document.path,
         cwd: nova.workspace.path

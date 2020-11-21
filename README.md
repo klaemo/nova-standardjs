@@ -6,7 +6,7 @@ Even though `standard` treats all rule violations as errors, this extensions (in
 
 ## Features
 
-- supported syntaxes: `javascript`, `typescript`, `jsx`, `tsx` (more to come)
+- supported syntaxes: `javascript`, `jsx`, `markdown`, `html`, `vue`
 - `Fix all auto-fixable issues` command that can be invoked through the command palette
 - `Auto-fix on save` configurable globally and on a per-workspace basis (off by default)
 - uses **locally** installed `standard` only
@@ -19,14 +19,13 @@ Even though `standard` treats all rule violations as errors, this extensions (in
 
 JavaScript Standard Style requires some additional tools to be installed on your Mac:
 
-- a recent [Node.js](https://nodejs.org) version that's supported by [standardJS](https://standardjs.com)
-- `standard` has to be installed **locally** in your workspace. This extension will not use any globally installed `standard` installations. If this is something you want, feel free to open an issue or PR.
-
-<!--
-✨ Providing tips, tricks, or other guides for installing or configuring external dependencies can go a long way toward helping your users have a good setup experience:
--->
+A recent [Node.js](https://nodejs.org) version that's supported by [standardJS](https://standardjs.com)
 
 > To install the current stable version of Node, click the "Recommended for Most Users" button to begin the download. When that completes, double-click the **.pkg** installer to begin installation.
+
+`standard` has to be installed **locally** in your workspace (e.g. with `npm i -D standard`). This extension will not use any globally installed `standard` installations. If this is something you want, feel free to open an issue or PR.
+
+> If you would like to check additional syntaxes like `markdown`, `html` or `vue`, you'll need to install the appropriate ESLint plugin. The extension will let you know which one. Additionally, you **must** add the plugin to `standard.plugins` in `package.json` (see https://standardjs.com for more information).
 
 ### Configuration
 
