@@ -17,8 +17,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "standard": {
-    "plugins": ["nova"],
-    "envs": ["commonjs", "nova/nova"]
+    "plugins": [
+      "nova"
+    ],
+    "envs": [
+      "commonjs",
+      "nova/nova"
+    ]
   },
   "repository": {
     "type": "git",

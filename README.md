@@ -1,26 +1,15 @@
-<!--
-👋 Hello! As Nova users browse the extensions library, a good README can help them understand what your extension does, how it works, and what setup or configuration it may require.
-
-Not every extension will need every item described below. Use your best judgement when deciding which parts to keep to provide the best experience for your new users.
-
-💡 Quick Tip! As you edit this README template, you can preview your changes by selecting **Extensions → Activate Project as Extension**, opening the Extension Library, and selecting "JavaScript Standard Style" in the sidebar.
-
-Let's get started!
--->
-
-<!--
-🎈 Include a brief description of the features your extension provides. For example:
--->
-
-**JavaScript Standard Style** automatically lints all open files, then reports errors and warnings in Nova's **Issues** sidebar and the editor gutter:
-
-<!--
-🎈 It can also be helpful to include a screenshot or GIF showing your extension in action:
--->
+**JavaScript Standard Style** automatically lints all open files, then reports errors and warnings in Nova's **Issues** sidebar and the editor gutter.
 
 ![Screenshot of Nova.app running the JavaScript Standard Style extension](https://raw.githubusercontent.com/klaemo/nova-standardjs/main/Images/screenshot.png)
 
-It also includes a `Fix all auto-fixable issues` command that can be invoked through the command palette.
+Even though `standard` treats all rule violations as errors, this extensions (in order to reduce visual clutter) displays auto-fixable issues as "hints" and all other issues as "errors".
+
+## Features
+
+- supported syntaxes: `javascript`, `typescript`, `jsx`, `tsx` (more to come)
+- `Fix all auto-fixable issues` command that can be invoked through the command palette
+- `Auto-fix on save` configurable globally and on a per-workspace basis (off by default)
+- uses **locally** installed `standard` only
 
 ## Requirements
 
@@ -59,7 +48,7 @@ You can also configure preferences on a per-project basis in **Project → Proje
 P.S. If you'd like, you can remove these comments before submitting your extension 😉
 -->
 
-### Credits
+## Credits
 
 Lots of inspiration was drawn from these sources:
 
