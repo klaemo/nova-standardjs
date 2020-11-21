@@ -6,7 +6,7 @@
   "homepage": "https://github.com/klaemo/nova-standardjs#readme",
   "repository": "https://github.com/klaemo/nova-standardjs",
   "bugs": "https://github.com/klaemo/nova-standardjs/issues",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "categories": ["issues", "formatters", "commands"],
 
   "main": "main.js",
