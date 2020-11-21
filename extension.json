@@ -15,8 +15,7 @@
     "onLanguage:javascript",
     "onLanguage:jsx",
     "onLanguage:markdown",
-    "onLanguage:html",
-    "onLanguage:vue"
+    "onLanguage:html"
   ],
 
   "entitlements": {

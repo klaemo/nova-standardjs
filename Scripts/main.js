@@ -1,7 +1,7 @@
 const { getConfigWithWorkspaceOverride, adjustRange } = require('./helpers')
 
 const DEFAULT_SYNTAXES = ['javascript', 'jsx']
-const EXTRA_SYNTAXES = ['markdown', 'html', 'vue']
+const EXTRA_SYNTAXES = ['markdown', 'html']
 const ALLOWED_SYNTAXES = [...DEFAULT_SYNTAXES, ...EXTRA_SYNTAXES]
 const AUTO_FIX_CONFIG_KEY = 'klaemo.standardjs.config.autoFixOnSave'
 
