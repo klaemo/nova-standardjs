@@ -60,7 +60,7 @@ class StandardExtension {
       args: [
         'node',
         nova.path.join(nova.extension.path, 'Scripts', 'standard-server.js'),
-        nova.path.join(nova.workspace.path, 'node_modules', 'standard')
+        nova.path.join(nova.workspace.path, 'node_modules', 'standard', 'index.js')
       ],
       stdio: 'jsonrpc'
     })
@@ -208,11 +208,13 @@ class StandardExtension {
     const documentRange = new Range(0, editor.document.length)
     const text = editor.document.getTextInRange(documentRange)
 
-    const response = await this.service.request('lint', {
+    const rawResponse = (await this.service.request('lint', {
       text,
       filename: editor.document.path,
       cwd: nova.workspace.path
-    })
+    }))
+
+    const response = rawResponse?.[0] || rawResponse?.results?.[0]
 
     if (response.fixableErrorCount === 0) {
       console.info('fix: no fixable errors in', filename)
@@ -220,7 +222,7 @@ class StandardExtension {
     }
 
     /** @type {LintMessage[]} */
-    const messages = response.results?.[0]?.messages
+    const messages = response?.messages
 
     if (!messages) {
       console.info('fix: messages is null', filename)
@@ -290,13 +292,15 @@ class IssuesProvider {
 
       console.time('linting finished in')
 
-      const response = await this.extension.service.request('lint', {
+      const rawResponse = await this.extension.service.request('lint', {
         text,
         filename: editor.document.path,
         cwd: nova.workspace.path
       })
 
-      const messages = response.results?.[0]?.messages
+      const response = rawResponse?.[0] || rawResponse?.results?.[0]
+
+      const messages = response?.messages
 
       if (!messages) {
         console.info('lint: messages is null')
@@ -319,12 +323,11 @@ class IssuesProvider {
         issue.endColumn = message.endColumn
         issue.code = message.ruleId
         issue.source = nova.extension.name
-        issue.severity = message.fix ? IssueSeverity.Info : IssueSeverity.Error
+        issue.severity = IssueSeverity.Error
         return issue
       })
 
       console.timeEnd('linting finished in')
-
       return issues
     } catch (error) {
       console.error(error)
